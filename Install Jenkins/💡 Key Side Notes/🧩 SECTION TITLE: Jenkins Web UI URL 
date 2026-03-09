@@ -1,0 +1,55 @@
+// 📦 SUMMARY  
+// This code snippet shows how to access the Jenkins web interface through a browser.  
+// Language/Platform: Jenkins / Groovy-style configuration notes  
+// What you'll learn: How to locate the Jenkins URL, understand IP addresses and ports, and verify connectivity.  
+// Outcome: You'll know the exact web address to open in your browser to log in to Jenkins.  
+// Why this matters: Accessing the Jenkins dashboard is the first step in creating jobs, managing pipelines,  
+// and automating builds in real-world DevOps projects.  
+
+// ------------------------------  
+// 🧩 SECTION TITLE: Jenkins Web UI URL  
+// ------------------------------  
+http://<IP_ADDRESS_HERE>:8080   // ✅ What it does: Provides the URL to access the Jenkins dashboard.  
+                               // 🧠 Why it matters: This is where you log in, configure Jenkins,  
+                               //    install plugins, and manage automation pipelines.  
+                               //    The placeholder `<IP_ADDRESS_HERE>` is your server's IP address.  
+                               //    The `:8080` means Jenkins runs on port 8080 by default.  
+
+// ------------------------------  
+// ⚙️ SECTION TITLE: Configuration / Setup / Logic Block  
+// ------------------------------  
+// Open your browser and enter the full URL:  
+// Example: http://123.45.67.89:8080  
+// ✅ What it does: Loads Jenkins login/setup page.  
+// 🧠 Why it matters: This confirms Jenkins is running and accessible over the network.  
+
+// ------------------------------  
+// 🧪 SECTION TITLE: Output / Result / Log  
+// ------------------------------  
+// Browser shows: "Unlock Jenkins" screen (first-time setup) or Jenkins dashboard (if already configured).  
+// ✅ What it does: Confirms that Jenkins is successfully installed and reachable.  
+// 🧠 Why it matters: If the page does not load, it means firewall rules, service status, or network connectivity  
+//    might need troubleshooting.  
+
+// ------------------------------  
+// ▶️ HOW TO RUN / EXECUTE THIS CODE  
+// ------------------------------  
+// curl http://<IP_ADDRESS_HERE>:8080   // ✅ What it does: Sends a request to the Jenkins server from Linux/Mac terminal.  
+//                                     // 🧠 Why it matters: Helps verify that Jenkins is running without using a browser.  
+//                                     // 🔄 Equivalent PowerShell command:  
+//                                     // Invoke-WebRequest -Uri "http://<IP_ADDRESS_HERE>:8080"  
+
+// Start-Sleep -Seconds 2; Invoke-WebRequest -Uri "http://<IP_ADDRESS_HERE>:8080"  
+//                                     // ✅ What it does: Pauses for 2 seconds, then sends a request from Windows PowerShell.  
+//                                     // 🧠 Why it matters: Useful in Windows environments for quick connectivity tests.  
+//                                     // 🔄 Equivalent Linux/bash command:  
+//                                     // curl -I http://<IP_ADDRESS_HERE>:8080  
+
+// ------------------------------  
+// ✅ NOTES / GOTCHAS / TIPS  
+// ------------------------------  
+// - Always replace `<IP_ADDRESS_HERE>` with your actual server's public or private IP.  
+// - If the page does not load, ensure port 8080 is open in your firewall/security group.  
+// - Sometimes Jenkins runs on a different port (check Jenkins logs or config if unsure).  
+// - Use `systemctl status jenkins` (Linux) or check "Services" panel (Windows) to confirm Jenkins service is active.  
+// - Official docs: https://www.jenkins.io/doc/book/installing/  
