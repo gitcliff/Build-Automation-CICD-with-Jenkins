@@ -1,0 +1,26 @@
+# 📦 SUMMARY  
+# This URL opens Jenkins' **Configure Tools** page in the web UI, where you can set up tools like JDK, Git, Maven, or Docker for Jenkins jobs.  
+# Language/Platform: Web URL (used in browser)  
+# What you'll learn: Navigating Jenkins web interface, configuring global tool settings  
+# Outcome: You’ll be able to define versions and paths for build tools Jenkins will use during job execution  
+# Why this matters: Without proper tool configuration, Jenkins jobs that depend on them will fail (e.g., builds needing Maven or Git)  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Open Jenkins Configure Tools Page  
+# ------------------------------  
+http://<your-server-ip>:8080/manage/configureTools/  
+# ✅ What it does: Directs your browser to Jenkins’ tool configuration page at your server’s IP on port 8080  
+# 🧠 Why it matters: This page lets you define installation paths or automatic installers for tools needed by Jenkins pipelines  
+
+# ------------------------------  
+# ✅ NOTES / GOTCHAS / TIPS  
+# ------------------------------  
+# - Replace `<your-server-ip>` with the actual IP of your Jenkins host (e.g., `192.168.1.100`).  
+# - You must be logged into Jenkins with admin privileges to access this page.  
+# - Tools configured here become available globally to all jobs and pipelines.  
+# - Common tools to configure:  
+#   - **Git** for SCM checkout  
+#   - **JDK** for Java-based builds  
+#   - **Maven/Gradle** for Java project builds  
+#   - **Docker** for containerized build environments  
+# - For Jenkins running behind a firewall, ensure port 8080 is open.  
