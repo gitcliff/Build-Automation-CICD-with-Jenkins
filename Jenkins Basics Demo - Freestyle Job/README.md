@@ -1,9 +1,9 @@
-#   5 - Jenkins Basics Demo - Freestyle Job
+#    - Jenkins Basics Demo - Freestyle Job
 
 
 # 📖 Summary
 
-Worked on **Lab 5 - Jenkins Basics Demo - Freestyle Job**, focusing on **CI/CD fundamentals using Jenkins, Node.js, Maven, and Git integration**.
+Worked on **Lab - Jenkins Basics Demo - Freestyle Job**, focusing on **CI/CD fundamentals using Jenkins, Node.js, Maven, and Git integration**.
 Tasks included **creating and configuring Jenkins freestyle and Maven jobs, verifying tool installations, integrating Github repositories, and executing build scripts** to solve **automation and build verification challenges**.
 Set up **Jenkins, NodeJS plugin, Maven, and Git SCM** to automate and optimize the CI/CD pipeline, aiming to **ensure reliable build, test, and packaging processes for Java applications and frontend tools**.
 

@@ -1,0 +1,34 @@
+# 📦 SUMMARY  
+# These commands check if **npm (Node.js package manager)** and **Apache Maven** are installed in your environment, and display their versions.  
+# Language/Platform: Bash (Linux/macOS), Command Prompt/PowerShell (Windows)  
+# What you'll learn: How to verify the availability of npm and Maven for build automation  
+# Outcome: Version numbers are printed if the tools are installed  
+# Why this matters: Jenkins jobs require these tools for Node.js and Java-based projects; this ensures they’re ready in your build environment  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Check npm Version (Node.js Package Manager)  
+# ------------------------------  
+npm --version  
+# ✅ What it does: Prints the installed npm version (e.g., `10.8.2`)  
+# 🧠 Why it matters: Ensures npm is installed and can manage Node.js project dependencies  
+# 🔄 Windows PowerShell equivalent: Same command works (`npm --version`) if Node.js is installed  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Check Apache Maven Version  
+# ------------------------------  
+mvn --version  
+# ✅ What it does: Displays Maven version and Java runtime details (e.g., `Apache Maven 3.9.6`)  
+# 🧠 Why it matters: Confirms Maven is available to build Java projects and run Jenkins pipelines  
+# 🔄 Windows PowerShell equivalent: Same command works (`mvn --version`) if Maven is in PATH  
+
+# ------------------------------  
+# ✅ NOTES / GOTCHAS / TIPS  
+# ------------------------------  
+# - If these commands return “command not found”:
+#     - Install Node.js + npm:  
+#       Linux: `apt install nodejs npm`  
+#       Windows: Download installer from https://nodejs.org  
+#     - Install Maven:  
+#       Linux: `apt install maven`  
+#       Windows: Download from https://maven.apache.org/download.cgi and add to PATH  
+# - You can also verify Java for Maven with: `java -version`
