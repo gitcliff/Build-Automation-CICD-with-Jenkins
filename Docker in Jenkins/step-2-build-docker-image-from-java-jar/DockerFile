@@ -1,0 +1,74 @@
+# 📦 SUMMARY  
+# This Dockerfile builds a lightweight Java 8 runtime container using Amazon Corretto JRE on Alpine Linux,  
+# copies the built Java Maven app JAR into the image, exposes port 8080, and runs the app using java -jar.  
+# Language/Platform: Dockerfile for Java (Amazon Corretto 8, Alpine Linux)  
+# What you'll learn: Base image selection, copying build artifacts, exposing ports, and running Java apps in containers  
+# Outcome: Creates a runnable container image for your Java Maven application that listens on port 8080  
+# Why this matters: Containerizes Java apps efficiently for easy deployment and scaling  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Base Image and Java Runtime  
+# ------------------------------  
+FROM amazoncorretto:8-alpine3.17-jre  
+# ✅ What it does: Uses Amazon Corretto 8 (OpenJDK 8 variant) on Alpine 3.17 with just the JRE.  
+# 🧠 Why it matters:  
+#    - Provides a minimal, lightweight Java runtime environment.  
+#    - Smaller image size reduces deployment time and resource usage.  
+# 🧠 How it works:  
+#    - Docker downloads the specified base image from Docker Hub if not present locally.  
+#    - `amazoncorretto:8-alpine3.17-jre` includes only the Java runtime, not the full JDK, which is enough to run a compiled JAR.  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Expose Application Port  
+# ------------------------------  
+EXPOSE 8080  
+# ✅ What it does: Informs Docker that the container will listen on port 8080 at runtime.  
+# 🧠 Why it matters:  
+#    - Enables host-to-container port mapping (`-p` or `--publish`) so your app is reachable externally.  
+# 🧠 How it works:  
+#    - EXPOSE does not publish the port itself; it’s documentation for Docker and other developers.  
+#    - Actual port mapping occurs when running the container: `docker run -p 8080:8080 <image>`.  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Copy Application JAR into Container  
+# ------------------------------  
+COPY ./target/java-maven-app-*.jar /usr/app/  
+# ✅ What it does: Copies the Java Maven build artifact (JAR) from the host's `target` folder into `/usr/app/` in the container.  
+# 🧠 Why it matters: The JAR must be inside the container to run the Java application.  
+# 🧠 How it works:  
+#    - Docker takes the file(s) matching `java-maven-app-*.jar` from `./target` relative to the build context.  
+#    - Places them inside `/usr/app/` in the image filesystem.  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Set Working Directory  
+# ------------------------------  
+WORKDIR /usr/app  
+# ✅ What it does: Sets the current directory inside the container to `/usr/app` for subsequent commands.  
+# 🧠 Why it matters:  
+#    - Simplifies paths for CMD or ENTRYPOINT commands.  
+#    - Any relative paths in commands or scripts now start from `/usr/app`.  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Run Java Application  
+# ------------------------------  
+CMD ["java", "-jar", "java-maven-app-*.jar"]  
+# ✅ What it does: Starts the Java app by running `java -jar` on the JAR file using a wildcard.  
+# 🧠 Why it matters:  
+#    - Defines the default command executed when the container starts.  
+#    - Ensures the container automatically launches your app.  
+# 🧠 How it works:  
+#    - Docker evaluates the CMD array and runs the Java command in the container’s `/usr/app` working directory.  
+#    - Wildcard (`*`) matches any file beginning with `java-maven-app-` and ending with `.jar`.  
+
+# ------------------------------  
+# ✅ NOTES / GOTCHAS / TIPS  
+# ------------------------------  
+# - The wildcard `java-maven-app-*.jar` works only if exactly one matching file exists; otherwise, Docker build will fail.  
+# - For reliability, consider renaming the JAR explicitly:  
+#   COPY ./target/java-maven-app-1.0.jar /usr/app/app.jar  
+#   CMD ["java", "-jar", "app.jar"]  
+# - Alpine images are small but may lack certain libraries; test your app to ensure compatibility.  
+# - Always run `docker build` from the project root where `target/` exists:  
+#     docker build -t java-maven-app:1.0 .  
+# - To run the container and map port 8080:  
+#     docker run -p 8080:8080 java-maven-app:1.0  

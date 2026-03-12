@@ -1,0 +1,100 @@
+# 📦 SUMMARY  
+# This sequence configures Docker to trust a Nexus registry as insecure (HTTP), restarts Docker,  
+# builds and tags a Docker image for the Nexus repo, logs into Nexus securely, and pushes the image.  
+# Language/Platform: Bash (Linux shell commands for Docker and system config)  
+# What you'll learn: Configuring Docker daemon for insecure registries, image tagging, secure login with password stdin, pushing images to private Nexus repo.  
+# Outcome: Your Docker image is uploaded to the Nexus private registry on the server IP and accessible for deployments.  
+# Why this matters: Enables using private container registries without HTTPS (common in dev/test) and integrates Docker builds with Nexus for artifact management.  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Configure Docker daemon for insecure Nexus registry  
+# ------------------------------  
+sudo nano /etc/docker/daemon.json  
+# ✅ What it does: Opens Docker daemon configuration file for editing.  
+# 🧠 Why it matters: Docker blocks HTTP (insecure) registries by default. Adding Nexus here allows Docker to push/pull to/from it.  
+# 🧠 How it works:  
+#    - `sudo` → run as root because daemon.json requires elevated permissions.  
+#    - `nano` → text editor to modify the file.  
+#    - `/etc/docker/daemon.json` → Docker daemon config file location.  
+
+# Add or merge the following JSON snippet inside the file:  
+# {  
+#   "insecure-registries": ["164.92.127.132:8083"]  
+# }  
+# 🧠 Why it matters:  
+#    - Docker sees this registry as "trusted insecure" and allows connections over HTTP.  
+#    - Failing to add it will result in push/pull errors like "x509: certificate signed by unknown authority".  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Restart Docker daemon  
+# ------------------------------  
+sudo systemctl restart docker  
+# ✅ What it does: Restarts Docker service to apply updated configuration.  
+# 🧠 Why it matters: Docker reads daemon.json only at startup; restarting ensures the insecure registry setting is applied.  
+# 🧠 How it works:  
+#    - `systemctl restart docker` → stops and starts Docker service.  
+#    - After restart, `docker info` will show the insecure registry in its configuration.  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Start Jenkins container (if not running)  
+# ------------------------------  
+docker start <jenkins_container_id>  
+# ✅ What it does: Starts Jenkins container using its container ID.  
+# 🧠 Why it matters: Jenkins must be running to build/push Docker images.  
+# 🧠 How it works:  
+#    - `docker start` → starts a stopped container.  
+#    - `<jenkins_container_id>` → replace with actual ID from `docker ps -a`.  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Build and tag image for Nexus registry  
+# ------------------------------  
+docker build -t 164.92.127.132:8083/java-maven-app:1.1 .  
+# ✅ What it does: Builds the Docker image from Dockerfile and tags it with Nexus registry address and version.  
+# 🧠 Why it matters: Correct tagging is required so `docker push` knows where to upload the image.  
+# 🧠 How it works:  
+#    - `docker build` → build command.  
+#    - `-t <registry>/<image>:<tag>` → assigns repository, registry, and version.  
+#    - `.` → uses current workspace (Dockerfile and app files) as build context.  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Secure login to Nexus repository  
+# ------------------------------  
+echo $PASSWORD | docker login -u $USERNAME --password-stdin 164.92.127.132:8083  
+# ✅ What it does: Logs into Nexus Docker registry securely using environment variables.  
+# 🧠 Why it matters: Avoids exposing password in command history or logs.  
+# 🧠 How it works:  
+#    1. `echo $PASSWORD` → outputs password from environment variable.  
+#    2. `| docker login -u $USERNAME --password-stdin <registry>` → pipes password to Docker login securely.  
+#    3. `$USERNAME` and `$PASSWORD` can come from Jenkins credentials bindings.  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Push image to Nexus registry  
+# ------------------------------  
+docker push 164.92.127.132:8083/java-maven-app:1.1  
+# ✅ What it does: Uploads the tagged Docker image to the Nexus registry.  
+# 🧠 Why it matters: Makes the image available for other users, CI/CD pipelines, or deployment environments.  
+# 🧠 How it works:  
+#    - Docker identifies the image by tag.  
+#    - Sends layers to the Nexus registry over HTTP (insecure but whitelisted).  
+#    - Registry stores image for pull by other systems.  
+
+# ------------------------------  
+# ✅ NOTES / GOTCHAS / TIPS  
+# ------------------------------  
+# - JSON syntax in daemon.json must be valid; one missing comma can prevent Docker from starting.  
+# - Verify insecure registry: `docker info | grep -i insecure`.  
+# - Avoid HTTP in production; consider using HTTPS with certificates.  
+# - Always confirm container IDs before start/stop operations.  
+
+# ------------------------------  
+# 🔄 Windows PowerShell equivalents  
+# ------------------------------  
+# Edit daemon.json:  
+#   - Use Notepad or admin editor: `notepad C:\ProgramData\Docker\config\daemon.json`  
+# Restart Docker Desktop:  
+#   - Via GUI or PowerShell: `Restart-Service docker`  
+# Build, login, push commands work the same in PowerShell as Bash.  
+# 🧠 Why it matters: PowerShell commands require elevated privileges for editing config and restarting service, similar to sudo in Linux.  
+# 🧠 How it works:  
+#    - `Restart-Service docker` → stops and starts Docker Desktop to reload settings.  
+#    - Docker CLI commands like `docker build` and `docker push` behave identically to Linux, so same pipeline scripts can run cross-platform.  

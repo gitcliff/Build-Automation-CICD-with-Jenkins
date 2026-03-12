@@ -1,0 +1,49 @@
+# 📦 SUMMARY  
+# This Jenkins job builds a Docker image for the Java Maven app, lists Docker images to confirm,  
+# and runs entirely inside the Jenkins container with Docker socket mounted.  
+# Language/Platform: Bash (Jenkins Execute Shell)  
+# What you'll learn: How to build Docker images from a Jenkins pipeline.  
+# Outcome: Produces a Docker image named `java-maven-app:1.0` ready for deployment or further pipeline steps.  
+# Why this matters: Automating Docker image builds in Jenkins ensures consistent, repeatable builds  
+# for Java Maven applications without manual intervention.  
+
+http://<JENKINS_IP>:8080/job/java-maven-build/configure  
+# ✅ What it does: Location in Jenkins UI to configure the job.  
+# 🧠 Why it matters: Shows where to paste these commands under "Build → Execute shell" so Jenkins can run them automatically.  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: Build Docker Image Inside Jenkins  
+# ------------------------------  
+docker build -t java-maven-app:3.0 .  
+# ✅ What it does: Builds a Docker image named `java-maven-app:1.0` using the Dockerfile in the current Jenkins workspace.  
+# 🧠 Why it matters: Converts your Java Maven project into a portable container image that can be deployed anywhere Docker runs.  
+# 🧠 How (broken down):  
+#    1. `docker build` → command to build a Docker image.  
+#    2. `-t java-maven-app:1.0` → tags the image with a name and version; makes it easier to reference later.  
+#    3. `.` → tells Docker to use the current directory (Jenkins workspace) as the build context.  
+#       - All files in this directory, including `Dockerfile`, are used to build the image.  
+#    4. Jenkins runs this inside the container with `/var/run/docker.sock` mounted, so it can talk to host Docker.  
+# 🧠 Why each step matters:  
+#    - Tagging ensures you can version images (`1.0`, `1.1`, etc.).  
+#    - Build context `.` ensures the Dockerfile and project files are included.  
+#    - Using host Docker via socket allows Jenkins container to build images without running Docker-in-Docker.  
+
+# ------------------------------  
+# 🧩 SECTION TITLE: List Docker Images to Confirm  
+# ------------------------------  
+docker images  
+# ✅ What it does: Lists all Docker images currently available on the host from within the Jenkins container.  
+# 🧠 Why it matters: Confirms that `java-maven-app:1.0` was successfully built and is ready for the next pipeline steps.  
+# 🧠 How (broken down):  
+#    1. `docker images` → shows repository name, tag, image ID, creation date, and size of all images.  
+#    2. Look for `java-maven-app` with tag `1.0` to verify the build succeeded.  
+#    3. Helps debug failed builds or misnamed tags before deploying or running containers.  
+
+# ------------------------------  
+# ✅ NOTES / GOTCHAS / TIPS  
+# ------------------------------  
+# - Ensure the Dockerfile is present in the Jenkins workspace before running `docker build`.  
+# - Use descriptive tags (e.g., version numbers) to track builds.  
+# - If `docker build` fails, check Jenkins logs and Dockerfile syntax.  
+# - Mounting Docker socket inside Jenkins container is required to access host Docker.  
+# - Use `docker rmi <image>` to remove old images if needed.  
