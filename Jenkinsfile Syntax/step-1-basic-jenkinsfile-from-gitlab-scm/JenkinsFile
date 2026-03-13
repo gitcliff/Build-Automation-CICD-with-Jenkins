@@ -1,0 +1,57 @@
+// ------------------------------  
+// 🧩 SECTION TITLE: Jenkins Declarative Pipeline Skeleton  
+// ------------------------------  
+pipeline {                                // ✅ What it does: Defines the pipeline using Jenkins declarative syntax  
+                                          // 🧠 Why it matters: Declarative pipelines provide a structured, readable, and maintainable way to define CI/CD workflows  
+
+  agent any                               // ✅ What it does: Runs the pipeline on any available Jenkins agent/node  
+                                          // 🧠 Why it matters: Provides flexibility; Jenkins will automatically pick an available executor to run the pipeline  
+                                          // 🧠 How it works: If you have multiple agents, Jenkins chooses one; if none are available, the job waits until an agent is free  
+
+  stages {                                // ✅ What it does: Groups multiple sequential stages of the pipeline  
+                                          // 🧠 Why it matters: Each stage represents a logical step in CI/CD (e.g., build, test, deploy) and shows progress in the Jenkins UI  
+                                          // 🧠 How it works: Jenkins executes stages one after another unless configured with `parallel` for concurrent execution  
+
+    // ------------------------------  
+    // ⚙️ SECTION TITLE: Build Stage  
+    // ------------------------------  
+    stage('Build') {                      // ✅ What it does: Names this stage 'Build'  
+                                          // 🧠 Why it matters: Organizes pipeline visually in Jenkins and separates the build logic  
+      steps {                             // ✅ What it does: Contains commands or scripts to execute during this stage  
+                                          // 🧠 How it works: Each step is executed sequentially inside the agent/node  
+        echo 'Building...'                // ✅ What it does: Prints a message to Jenkins console  
+                                          // 🧠 Why it matters: Serves as a placeholder for actual build commands (e.g., `mvn package`)  
+                                          // 🧠 How it works: `echo` simply writes text to standard output, making pipeline execution visible in logs  
+      }
+    }
+
+    // ------------------------------  
+    // ⚙️ SECTION TITLE: Test Stage  
+    // ------------------------------  
+    stage('Test') {                       // ✅ What it does: Names this stage 'Test'  
+                                          // 🧠 Why it matters: Separates testing logic from build and deploy, making failures easier to track  
+      steps {                             // ✅ What it does: Contains testing commands  
+                                          // 🧠 How it works: Commands in steps are executed sequentially on the agent  
+        echo 'Testing...'                 // ✅ What it does: Prints "Testing..." to console  
+                                          // 🧠 Why it matters: Placeholder for actual tests (unit, integration)  
+                                          // 🧠 How it works: In real use, replace with `mvn test` or other test commands; Jenkins records results in UI  
+
+      }
+    }
+
+    // ------------------------------  
+    // ⚙️ SECTION TITLE: Deploy Stage  
+    // ------------------------------  
+    stage('Deploy') {                     // ✅ What it does: Names this stage 'Deploy'  
+                                          // 🧠 Why it matters: Isolates deployment logic (e.g., Docker build/push, Kubernetes apply)  
+      steps {                             // ✅ What it does: Holds deployment commands  
+                                          // 🧠 How it works: Commands here are executed sequentially after previous stages succeed  
+        echo 'Deploying...'               // ✅ What it does: Prints "Deploying..." to console  
+                                          // 🧠 Why it matters: Placeholder for real deployment commands  
+                                          // 🧠 How it works: Replace with commands like `docker build -t myapp:1.0 .`, `docker push`, or `kubectl apply -f deployment.yaml`  
+
+      }
+    }
+
+  } // end of stages
+} // end of pipeline

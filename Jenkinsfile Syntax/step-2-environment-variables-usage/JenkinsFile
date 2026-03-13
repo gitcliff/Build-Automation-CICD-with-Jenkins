@@ -1,0 +1,11 @@
+// ------------------------------  
+// 🧩 SECTION TITLE: Print Environment Variables  
+// ------------------------------  
+echo "Branch name: ${env.BRANCH_NAME}"      // ✅ What it does: Prints the current Git branch name  
+                                           // 🧠 Why it matters: Helps identify which branch triggered the build (useful in multi-branch pipelines)  
+
+echo "Build number: ${env.BUILD_NUMBER}"   // ✅ What it does: Displays the Jenkins build number  
+                                           // 🧠 Why it matters: Useful for tracking builds and tagging artifacts with a unique build ID  
+
+echo "Git commit: ${env.GIT_COMMIT}"       // ✅ What it does: Shows the Git commit hash of the code being built  
+                                           // 🧠 Why it matters: Ensures traceability of which commit is associated with the build  

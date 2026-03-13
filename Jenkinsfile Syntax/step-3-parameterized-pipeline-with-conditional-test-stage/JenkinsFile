@@ -1,0 +1,74 @@
+pipeline {
+    agent any  // ✅ Runs on any available Jenkins agent/node
+               // 🧠 Why it matters: Makes the pipeline flexible, so it does not require a specific hardcoded node.
+               // 🧠 How it works: Jenkins will pick any free executor to run this job.
+
+    // ------------------------------
+    // ⚙️ SECTION TITLE: Pipeline Parameters
+    // ------------------------------
+    parameters {
+        choice(
+            name: 'VERSION',          // ✅ Dropdown parameter called VERSION
+            choices: ['v1', 'v2', 'v3'], // ✅ Predefined version options
+            description: 'Select app version' // 🧠 Guides user on what this selection is for
+        )
+        booleanParam(
+            name: 'executeTests',     // ✅ Checkbox parameter called executeTests
+            defaultValue: true,       // ✅ Tests run by default unless unchecked
+            description: 'Run Tests?' // 🧠 Lets user choose to skip or execute tests
+        )
+    }
+
+    // ------------------------------
+    // ⚙️ SECTION TITLE: Pipeline Stages
+    // ------------------------------
+    stages {
+
+        // ------------------------------
+        // 🧩 Build Stage
+        // ------------------------------
+        stage('Build') {
+            steps {
+                echo "Building version ${params.VERSION}"  
+                // ✅ Prints the selected VERSION to the Jenkins console
+                // 🧠 Why it matters: Confirms user-selected version is being used
+                // 🧠 How it works: `params.VERSION` references the parameter value set when the job is triggered
+                // 🧠 Placeholder: Replace with real build command, e.g., `mvn package` or `docker build -t myapp:${params.VERSION} .`
+            }
+        }
+
+        // ------------------------------
+        // 🧩 Test Stage (Conditional)
+        // ------------------------------
+        stage('Test') {
+            when {
+                expression { return params.executeTests }  
+                // ✅ Conditional execution: only runs if executeTests = true
+                // 🧠 Why it matters: Lets user skip tests to save time when needed
+                // 🧠 How it works: The closure evaluates the parameter and decides whether to execute the stage
+            }
+            steps {
+                echo "Running tests..."  
+                // ✅ Informational output
+                // 🧠 Why it matters: Shows pipeline progress in Jenkins UI
+                // 🧠 Placeholder: Replace with `mvn test` or another testing command
+            }
+        }
+
+        // ------------------------------
+        // 🧩 Deploy Stage
+        // ------------------------------
+        stage('Deploy') {
+            steps {
+                echo "Deploying..."  
+                // ✅ Simple log message indicating deployment is starting
+                // 🧠 Why it matters: Gives visibility in the Jenkins console
+
+                sh "echo Deploying version ${params.VERSION}"  
+                // ✅ Example shell command
+                // 🧠 Why it matters: Placeholder for real deployment logic, e.g., `docker push`, `scp`, or `kubectl apply`
+                // 🧠 How it works: `sh` executes a shell command on the Jenkins agent
+            }
+        }
+    }
+}

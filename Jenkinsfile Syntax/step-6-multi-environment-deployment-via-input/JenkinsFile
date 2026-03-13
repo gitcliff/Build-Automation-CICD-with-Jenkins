@@ -1,0 +1,119 @@
+// 📦 SUMMARY  
+// This Jenkins Declarative Pipeline: Builds, tests, and deploys an app with user-driven parameters for version selection, test execution, and deployment environment.  
+// Language/Platform: Groovy (Jenkins Pipeline)  
+// What you'll learn: Defining pipeline parameters, conditional stages, shared library loading, and interactive user prompts.  
+// Outcome: Builds a chosen app version, optionally runs tests, and deploys to a user-selected environment.  
+// Why this matters: This pattern allows CI/CD pipelines to be dynamic and interactive, enabling different workflows without modifying the Jenkinsfile.  
+
+pipeline {
+  agent any  // ✅ What it does: Uses any available Jenkins agent/node to run this pipeline.  
+             // 🧠 Why it matters: No need to pin to a specific node; Jenkins scheduler can pick any idle one.  
+
+  // ------------------------------  
+  // 🧩 PIPELINE PARAMETERS  
+  // ------------------------------  
+  parameters {
+    choice(
+      name: 'VERSION',  // ✅ What it does: Defines a dropdown parameter called VERSION  
+      choices: ['v1', 'v2', 'v3'],  // ✅ What it does: Provides three selectable versions of the app  
+      description: 'Select app version'  // 🧠 Why it matters: Lets user pick which app version to build/deploy  
+    )
+    booleanParam(
+      name: 'executeTests',  // ✅ What it does: Adds a checkbox parameter for controlling test execution  
+      defaultValue: true,    // ✅ What it does: Default is checked (tests run unless user unchecks)  
+      description: 'Run Tests?'  // 🧠 Why it matters: Enables skipping tests for faster pipelines in dev/test environments  
+    )
+  }
+
+  stages {
+
+    // ------------------------------  
+    // ⚙️ STAGE: Init  
+    // ------------------------------  
+    stage('Init') {
+      steps {
+        script {
+          gv = load 'script.groovy'  
+          // ✅ What it does: Loads an external Groovy script (script.groovy) as a shared library into variable gv  
+          // 🧠 Why it matters: Keeps pipeline DRY by delegating build, test, deploy logic to reusable functions  
+        }
+      }
+    }
+
+    // ------------------------------  
+    // ⚙️ STAGE: Build  
+    // ------------------------------  
+    stage('Build') {
+      steps {
+        script {
+          echo "Building version ${params.VERSION}"  
+          // ✅ What it does: Prints which app version is being built, based on user's selection  
+          // 🧠 Why it matters: Provides clarity and traceability in Jenkins console logs  
+
+          gv.buildApp()  
+          // ✅ What it does: Calls buildApp() from script.groovy to execute the build process  
+          // 🧠 Why it matters: Keeps build logic modular and reusable across pipelines  
+        }
+      }
+    }
+
+    // ------------------------------  
+    // 🧪 STAGE: Test  
+    // ------------------------------  
+    stage('Test') {
+      when {
+        expression { return params.executeTests }  
+        // ✅ What it does: Runs this stage only if executeTests parameter is true  
+        // 🧠 Why it matters: Saves time by skipping tests when not required  
+      }
+      steps {
+        script {
+          echo "Running tests..."  
+          // ✅ What it does: Logs a message to indicate tests are starting  
+          // 🧠 Why it matters: Helps identify which stages ran in Jenkins console  
+
+          gv.testApp()  
+          // ✅ What it does: Calls testApp() from script.groovy to execute the test suite  
+          // 🧠 Why it matters: Centralizes testing logic, easy to update without touching Jenkinsfile  
+        }
+      }
+    }
+
+    // ------------------------------  
+    // 🚀 STAGE: Deploy  
+    // ------------------------------  
+    stage('Deploy') {
+      steps {
+        script {
+          // ✅ What it does: Prompts user during pipeline run to select the target deployment environment  
+          def userInput = input(
+            id: 'envInput',  // ✅ What it does: Sets a unique ID for this input step (used for retries)  
+            message: 'Select Environment',  // ✅ What it does: Message displayed in Jenkins UI during prompt  
+            parameters: [
+              choice(
+                name: 'ENV',  
+                choices: ['dev', 'staging', 'prod'],  // ✅ What it does: Provides 3 environment options to deploy to  
+                description: 'Deployment Environment'  // 🧠 Why it matters: Lets user control where to deploy dynamically  
+              )
+            ]
+          )
+
+          echo "Deploying to ${userInput} environment..."  
+          // ✅ What it does: Logs selected environment to Jenkins console for visibility  
+
+          gv.deployApp(userInput)  
+          // ✅ What it does: Calls deployApp() from script.groovy with the selected environment  
+          // 🧠 Why it matters: Performs the deployment, tailored to user’s selected environment  
+        }
+      }
+    }
+
+  } // End of stages
+} // End of pipeline
+# ✅ From Jenkins UI:
+# Click "Build with Parameters" to select VERSION and toggle executeTests
+# Pipeline will pause in Deploy stage for environment selection
+
+# ✅ From Jenkins CLI (non-interactive, pre-select parameters):
+# jenkins-cli build <job_name> -p VERSION=v2 -p executeTests=false
+# 🧠 Why it matters: Enables fully automated pipeline runs without user interaction

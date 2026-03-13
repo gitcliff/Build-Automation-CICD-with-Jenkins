@@ -1,0 +1,83 @@
+// 📦 SUMMARY  
+// This code builds: A Jenkins Declarative Pipeline that loads an external Groovy helper script and uses it to build, test, and deploy an application based on pipeline parameters.  
+// Language/Platform: Jenkins Declarative Pipeline (Groovy syntax)  
+// What you'll learn: Loading external Groovy scripts, conditional stage execution with parameters, using global variables, calling script functions.  
+// Outcome: Jenkins pipeline executes build, test (optional), and deploy stages, calling corresponding functions from the loaded Groovy script and passing parameters where needed.  
+// Why this matters: Modularizes pipeline logic for better maintainability and reusability, while enabling dynamic pipeline control via parameters.  
+
+def gv  // ✅ What it does: Declares a global variable to hold the loaded external Groovy script.  
+        // 🧠 Why it matters: Needed so functions from the script can be accessed throughout the pipeline stages.  
+
+pipeline {  
+  agent any  // ✅ What it does: Runs the pipeline on any available Jenkins agent.  
+             // 🧠 Why it matters: Provides flexibility to run on any node without restrictions.  
+
+  parameters {  
+    choice(  
+      name: 'VERSION',           // ✅ What it does: Parameter to select the app version to build/deploy.  
+      choices: ['v1', 'v2', 'v3'],  // ✅ Options for the app version.  
+      description: 'Select app version'  // ✅ Description shown in Jenkins UI to guide users.  
+    )  
+    booleanParam(  
+      name: 'executeTests',       // ✅ What it does: Boolean parameter to decide whether to run tests.  
+      defaultValue: true,         // ✅ Default is to run tests if user does not change.  
+      description: 'Run Tests?'   // ✅ Description in UI for clarity.  
+    )  
+  }  
+
+  stages {  
+    stage('Init') {  
+      steps {  
+        script {  
+          gv = load 'script.groovy'  // ✅ What it does: Loads external Groovy helper script into global variable gv.  
+                                    // 🧠 Why it matters: Allows pipeline to call reusable functions defined in the external script.  
+        }  
+      }  
+    }  
+
+    stage('Build') {  
+      steps {  
+        script {  
+          echo "Building version ${params.VERSION}"  // ✅ What it does: Logs the version being built.  
+                                                    // 🧠 Why it matters: Clear feedback in Jenkins console about the build version.  
+          gv.buildApp()                             // ✅ What it does: Calls buildApp() function from loaded script to run build logic.  
+                                                    // 🧠 Why it matters: Keeps build logic modular and reusable outside the Jenkinsfile.  
+        }  
+      }  
+    }  
+
+    stage('Test') {  
+      when {  
+        expression { return params.executeTests }  // ✅ What it does: Conditionally runs the Test stage only if executeTests is true.  
+                                                  // 🧠 Why it matters: Saves build time and resources by skipping tests when not needed.  
+      }  
+      steps {  
+        script {  
+          echo "Running tests..."  // ✅ What it does: Logs that tests are running.  
+                                   // 🧠 Why it matters: Informative for logs and debugging.  
+          gv.testApp()             // ✅ What it does: Calls testApp() function from the external script to run tests.  
+                                   // 🧠 Why it matters: Encapsulates test logic outside the Jenkinsfile for maintainability.  
+        }  
+      }  
+    }  
+
+    stage('Deploy') {  
+      steps {  
+        script {  
+          echo "Deploying..."                        // ✅ What it does: Logs a message indicating deployment has started.  
+                                                     // 🧠 Why it matters: Provides visual confirmation in console logs.  
+          sh "echo Deploying version ${params.VERSION}"  // ✅ What it does: Executes shell command to echo deploy version.  
+                                                        // 🧠 Why it matters: Demonstrates integration of shell commands in the pipeline.  
+          gv.deployApp()                            // ❗ Issue: deployApp() expects a parameter but none is provided here.  
+                                                   // 🧠 Why it matters: Without passing environment, deployment logic may fail or use default.  
+        }  
+      }  
+    }  
+  }  
+}  
+
+// ✅ NOTES / GOTCHAS / TIPS  
+// - The deployApp() function in the external Groovy script expects an argument for environment (e.g., 'dev', 'staging', 'prod').  
+// - To fix the pipeline, pass the environment parameter, e.g., gv.deployApp('dev') or add user input to select environment dynamically.  
+// - Using 'params.VERSION' inside the Groovy script requires the Jenkinsfile to pass that param or set global access carefully.  
+// - For shell commands, ensure the agent environment supports 'sh' (Linux/Mac) or adapt for Windows agents accordingly.  
