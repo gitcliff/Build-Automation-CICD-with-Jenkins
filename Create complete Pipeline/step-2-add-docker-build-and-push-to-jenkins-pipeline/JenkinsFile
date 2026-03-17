@@ -1,0 +1,94 @@
+// 📦 SUMMARY
+// This code builds: A Jenkins Declarative Pipeline that builds a Java application JAR, builds and pushes a Docker image to Docker Hub, and includes a placeholder deploy stage.
+// Language/Platform: Jenkins Declarative Pipeline with Maven and Docker CLI
+// What you'll learn: Using Jenkins tools configuration, running Maven builds, authenticating Docker with credentials, building and pushing Docker images, and structuring multi-step pipelines.
+// Outcome: The Java app is packaged as a JAR, a Docker image is built and pushed to Docker Hub with secure login, and the deploy stage is ready for future commands.
+// Why this matters: Automates containerized application build and delivery, essential for modern DevOps workflows.
+
+// ------------------------------  
+// 🧩 SECTION TITLE: Pipeline declaration and agent setup  
+// ------------------------------  
+pipeline {                                     // ✅ What it does: Starts a Jenkins Declarative Pipeline block.
+                                              // 🧠 Why it matters: All stages and steps must be enclosed in a 'pipeline' block in Declarative syntax.
+
+  agent any                                   // ✅ What it does: Runs the pipeline on any available Jenkins agent.
+                                              // 🧠 Why it matters: Ensures the pipeline executes regardless of which agent is free; flexible for multi-node setups.
+
+  // ------------------------------  
+  // ⚙️ SECTION TITLE: Tools configuration  
+  // ------------------------------  
+  tools {                                     // ✅ What it does: Specifies tools to automatically install/configure for the pipeline.
+                                              // 🧠 Why it matters: Ensures the correct version of Maven is available, avoiding conflicts with agent defaults.
+    maven 'maven-3.9'                         // ✅ What it does: Uses the Maven installation named 'maven-3.9' configured in Jenkins global tools.
+                                              // 🧠 Why it matters: Guarantees consistent Maven version for building Java projects.
+  }
+
+  // ------------------------------  
+  // 🧩 SECTION TITLE: Stages definition  
+  // ------------------------------  
+  stages {                                    // ✅ What it does: Defines sequential stages for the pipeline.
+                                              // 🧠 Why it matters: Stages organize pipeline tasks, making the process readable, debuggable, and visual in Jenkins UI.
+
+    // ------------------------------  
+    // 🧩 STAGE: Build JAR  
+    // ------------------------------  
+    stage('Build jar') {                       // ✅ What it does: Stage to package the Java application into a JAR.
+                                              // 🧠 Why it matters: Compiles and packages code so it can be used in a Docker image or deployed.
+      steps {                                 // ✅ What it does: Starts the steps block where commands are executed.
+        echo '🔧 Building the application...'  // ✅ What it does: Logs a message to Jenkins console output.
+                                              // 🧠 Why it matters: Provides visibility into what the pipeline is doing.
+        sh 'mvn package'                       // ✅ What it does: Runs the Maven package command to build the JAR.
+                                              // 🧠 Why it matters: Converts source code into a distributable artifact (.jar), which is the core output of this stage.
+      }
+    }
+
+    // ------------------------------  
+    // 🧩 STAGE: Build Docker Image  
+    // ------------------------------  
+    stage('Build Image') {                     // ✅ What it does: Stage to build and push a Docker image.
+                                              // 🧠 Why it matters: Containerizing the application allows it to run anywhere Docker is supported.
+
+      steps {                                 // ✅ What it does: Starts the steps block for this stage.
+        echo '🔧 Building the Docker Image'   // ✅ What it does: Logs a message about starting Docker build.
+                                              // 🧠 Why it matters: Provides real-time feedback in the Jenkins console.
+
+        // ------------------------------  
+        // ⚙️ SECTION: Docker Hub credentials  
+        // ------------------------------  
+        withCredentials([usernamePassword(     // ✅ What it does: Securely injects username/password credentials into environment variables.
+          credentialsId: 'docker-hub-credentials',  // ✅ What it does: References the Jenkins credentials ID.
+                                              // 🧠 Why it matters: Avoids hardcoding passwords in the pipeline, keeping secrets safe.
+          passwordVariable: 'PASS',           // ✅ What it does: Maps the password to the environment variable 'PASS'.
+          usernameVariable: 'USER'            // ✅ What it does: Maps the username to the environment variable 'USER'.
+        )]) {
+
+          sh 'docker build -t cdickersoncloudcoder/demo-app:jma-2.2 .'  
+          // ✅ What it does: Builds a Docker image from the current directory and tags it with 'jma-2.2'.
+          // 🧠 Why it matters: Prepares the container image that will be deployed or pushed to Docker Hub.
+
+          sh 'echo $PASS | docker login -u $USER --password-stdin'  
+          // ✅ What it does: Logs into Docker Hub using the injected credentials without exposing the password.
+          // 🧠 Why it matters: Enables pushing images securely without storing secrets in plain text.
+
+          sh 'docker push cdickersoncloudcoder/demo-app:jma-2.2'  
+          // ✅ What it does: Pushes the Docker image to Docker Hub.
+          // 🧠 Why it matters: Makes the image available for deployment to other environments or servers.
+        }
+      }
+    }
+
+    // ------------------------------  
+    // 🧩 STAGE: Deploy (placeholder)  
+    // ------------------------------  
+    stage('Deploy') {                          // ✅ What it does: Stage for deploying the application.
+                                              // 🧠 Why it matters: Deployment is the final step in CI/CD, but is left as a placeholder for now.
+      steps {
+        echo '🚀 Deploying the application...'  // ✅ What it does: Logs the deployment stage.
+                                              // 🧠 Why it matters: Provides visibility in Jenkins, showing that this stage has been reached.
+        // Add real deployment commands here     // ✅ What it does: Placeholder comment for future deployment steps.
+                                              // 🧠 Why it matters: Signals where deployment automation will be added later.
+      }
+    }
+
+  }
+}

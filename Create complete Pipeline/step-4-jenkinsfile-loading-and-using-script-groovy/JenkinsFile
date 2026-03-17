@@ -1,0 +1,50 @@
+// 📦 SUMMARY  
+// This code builds: A Jenkins Declarative Pipeline that initializes by loading external Groovy script functions, then runs build, Docker image creation, and deploy stages using those functions.  
+// Language/Platform: Jenkins Declarative Pipeline with external Groovy script integration  
+// What you'll learn: How to modularize Jenkins pipelines by loading shared Groovy scripts, calling external functions, and structuring multi-stage pipelines.  
+// Outcome: The pipeline executes buildJar, buildImage, and deploy functions defined externally, enabling clean, reusable pipeline code.  
+// Why this matters: Separating pipeline logic into scripts improves maintainability and reuse across multiple Jenkins jobs.
+
+pipeline {                             // ✅ Defines the Jenkins pipeline block.  
+  agent any                            // ✅ Runs on any available Jenkins agent.
+
+  tools {                              // ✅ Specifies tools needed for the build environment.  
+    maven 'maven-3.9'                  // ✅ Uses Maven version configured in Jenkins named 'maven-3.9'.  
+  }
+
+  stages {                             // ✅ Defines sequential stages of the pipeline.
+
+    stage('Init') {                    // ✅ Initialization stage to load external Groovy script.  
+      steps {  
+        script {  
+          gv = load 'script.groovy'    // ✅ Loads 'script.groovy' file into variable 'gv'.  
+                                        // 🧠 Why it matters: Allows calling functions defined in the external script later in the pipeline.
+        }
+      }
+    }
+
+    stage('Build jar') {               // ✅ Executes buildJar function from loaded script.  
+      steps {  
+        script {  
+          gv.buildJar()                // ✅ Calls the buildJar() method to package the Java app.  
+        }
+      }
+    }
+
+    stage('Build Image') {             // ✅ Executes buildImage function from loaded script.  
+      steps {  
+        script {  
+          gv.buildImage()              // ✅ Calls buildImage() method to build and push Docker image.  
+        }
+      }
+    }
+
+    stage('Deploy') {                  // ✅ Executes deploy function from loaded script.  
+      steps {  
+        script {  
+          gv.deploy()                  // ✅ Calls deploy() method for deployment tasks (currently placeholder).  
+        }
+      }
+    }
+  }
+}

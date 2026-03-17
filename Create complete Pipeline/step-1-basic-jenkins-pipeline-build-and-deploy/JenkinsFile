@@ -1,0 +1,46 @@
+// 📦 SUMMARY  
+// This code builds: A Jenkins Declarative Pipeline that builds a Java application using Maven and then deploys it.  
+// Language/Platform: Jenkins Declarative Pipeline (Groovy) with Maven build tool  
+// What you'll learn: Configuring tools in Jenkins pipelines, running shell commands, building Java projects with Maven, and structuring deployment stages.  
+// Outcome: The Java application is compiled and packaged into a JAR file in the 'Build jar' stage, followed by a placeholder deployment step.  
+// Why this matters: Automates build and deploy processes to ensure consistent, repeatable delivery of Java applications.
+
+pipeline {                              // ✅ What it does: Defines the Jenkins pipeline block.  
+                                        // 🧠 Why it matters: The root structure for all pipeline definitions.
+
+  agent any                            // ✅ What it does: Runs the pipeline on any available Jenkins agent.  
+                                        // 🧠 Why it matters: Allows flexibility in choosing build nodes.
+
+  tools {                             // ✅ What it does: Specifies tools to be available during pipeline execution.  
+    maven 'maven-3.9.1'               // ✅ Use the Maven installation configured in Jenkins named 'maven-3.9.1'.  
+                                      // 🧠 Why it matters: Ensures consistent Maven version for building the project.
+
+  stages {                           // ✅ What it does: Defines stages of the pipeline for organizing tasks.
+
+    stage('Build jar') {              // ✅ What it does: Defines the 'Build jar' stage to compile and package the app.
+
+      steps {                       // ✅ What it does: Lists steps to execute in this stage.
+
+        echo '🔧 Building the application...'  // ✅ Prints a friendly message indicating build start.  
+                                               // 🧠 Why it matters: Useful for logs and status visibility.
+
+        sh 'mvn package'            // ✅ Runs the shell command `mvn package` to build and package the Java app as a JAR file.  
+                                    // 🧠 Why it matters: Executes Maven’s build lifecycle up to packaging, creating the output artifact.
+
+      }
+    }
+
+    stage('Deploy') {                // ✅ What it does: Defines the 'Deploy' stage for deploying the built artifact.
+
+      steps {                      // ✅ Steps in deploy stage.
+
+        echo '🚀 Deploying the application...'  // ✅ Logs deployment start message.
+
+        // Placeholder for deployment commands (e.g., SCP, AWS CLI)  
+        // 🧠 Why it matters: This is where you’d add actual deployment commands like copying files or invoking cloud APIs.
+
+      }
+    }
+  }
+}
+
