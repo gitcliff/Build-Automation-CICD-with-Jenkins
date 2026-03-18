@@ -1,0 +1,64 @@
+# 📦 SUMMARY  
+# This code builds: A short interactive session inside a Docker container to inspect and change permissions on the Docker socket file.  
+# Language/Platform: Bash (Linux) + PowerShell equivalents provided  
+# What you'll learn: Running commands inside a container, inspecting file permissions, modifying permissions with chmod.  
+# Outcome: The Docker socket file (/var/run/docker.sock) inside the container will have its permissions updated.  
+# Why this matters: Changing permissions on docker.sock allows non-root users or processes inside the container to interact with the Docker daemon, which is often needed in CI/CD workflows or development environments.  
+
+# ------------------------------  
+# 🧩 START INTERACTIVE SHELL IN CONTAINER  
+# ------------------------------  
+docker exec -u 0 -it 3b8206735dcf bash  
+# ✅ What it does: Starts an interactive shell session (`bash`) inside the container with ID `3b8206735dcf` as the root user (`-u 0`).  
+# 🧠 Why it matters: Allows us to execute commands inside the container with root privileges. This is required for changing file permissions.  
+# 🔄 PowerShell equivalent:  
+# docker exec -u 0 -it 3b8206735dcf powershell  
+# ✅ What it does: Opens a PowerShell session instead of Bash if you're working in a Windows container.  
+
+# ------------------------------  
+# ⚙️ CHECK CURRENT PERMISSIONS OF DOCKER SOCKET  
+# ------------------------------  
+ls -l /var/run/docker.sock  
+# ✅ What it does: Lists the detailed file permissions and ownership of `/var/run/docker.sock` inside the container.  
+# 🧠 Why it matters: Shows who can currently read/write to the Docker socket. By default, it might be owned by `root` and only accessible to users in the `docker` group.  
+
+# ------------------------------  
+# 🛠️ MODIFY PERMISSIONS ON DOCKER SOCKET  
+# ------------------------------  
+chmod 666 /var/run/docker.sock  
+# ✅ What it does: Changes the file permissions so that **all users (owner, group, others)** can read and write to `/var/run/docker.sock`.  
+# 🧠 Why it matters: This allows non-root users and processes inside the container to communicate with the Docker daemon. Be careful: this grants broad access and could be a security risk.  
+
+# ------------------------------  
+# 🔁 VERIFY UPDATED PERMISSIONS  
+# ------------------------------  
+ls -l /var/run/docker.sock  
+# ✅ What it does: Lists the file permissions again to confirm that they have been updated to `-rw-rw-rw-` (read/write for everyone).  
+# 🧠 Why it matters: Double-checking ensures the `chmod` command worked as expected.  
+
+# ------------------------------  
+# ⏹️ EXIT CONTAINER SHELL  
+# ------------------------------  
+exit  
+# ✅ What it does: Exits the interactive shell session inside the container and returns you to the host system shell.  
+# 🧠 Why it matters: Closes the container session cleanly once changes are applied.  
+
+# ------------------------------  
+# ▶️ HOW TO RUN / EXECUTE THIS CODE  
+# ------------------------------  
+# ✅ Step 1: Copy the container ID from `docker ps` if needed  
+# docker ps                          # Lists all running containers with IDs and names  
+# 🔄 PowerShell equivalent:  
+# docker ps                          # Same command works in PowerShell  
+
+# ✅ Step 2: Run the commands above step by step inside the container  
+# 🔄 PowerShell alternative inside Windows container:  
+# Replace `bash` with `powershell` in the `docker exec` command  
+
+# ------------------------------  
+# ✅ NOTES / GOTCHAS / TIPS  
+# ------------------------------  
+# - Granting 666 permissions to docker.sock allows any process in the container to control Docker. Only do this in **trusted environments**.  
+# - For production setups, consider adding users to the `docker` group instead of using `chmod 666`.  
+# - If you’re working in Windows containers, replace `bash` with `cmd` or `powershell`.  
+# - To avoid running as root, use `docker exec -it --user <username>` if a user exists in the container.  
