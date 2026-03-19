@@ -1,0 +1,3 @@
+git add .
+git commit -m "Add Docker helper class and shared library function to build Docker images in Jenkins pipelines, encapsulating login and push logic."
+git push

@@ -1,0 +1,82 @@
+// 📦 SUMMARY  
+// This Jenkins Pipeline imports a shared library from GitLab to handle reusable build and deployment logic.  
+// It builds a Java JAR using Maven, containerizes it with Docker, pushes the image to a registry, and includes a deployment stage placeholder.  
+// Language/Platform: Jenkins Pipeline (Groovy)  
+// What you'll learn: shared library import, pipeline stages, script blocks, Maven tool configuration  
+// Outcome: a compiled JAR, a Docker image built and pushed to registry, and a scaffolded deployment step  
+// Why this matters: Shared libraries promote DRY (Don’t Repeat Yourself) principles and make Jenkins pipelines modular and reusable across projects  
+
+// ------------------------------  
+// 🧩 SHARED LIBRARY IMPORT  
+// ------------------------------  
+library identifier: 'jenkins-shared-library-1.0@main', retriever: modernSCM(  
+  [$class: 'GitSCMSource',  
+   remote: 'https://gitlab.com/cdickersoncloudcoder/jenkins-shared-library-1.0.git',  
+   credentialsId: 'gitlab-credentials']  
+)  
+// ✅ What it does: loads the shared library 'jenkins-shared-library-1.0' from the main branch of a GitLab repo  
+// 🧠 Why it matters: allows this pipeline to use functions like buildJar() and buildImage() defined in the library  
+
+// ------------------------------  
+// 🧩 PIPELINE DEFINITION  
+// ------------------------------  
+pipeline {  
+  agent any  
+  // ✅ What it does: allows the pipeline to run on any available Jenkins agent  
+  // 🧠 Why it matters: provides flexibility without restricting to specific nodes  
+
+  tools {  
+    maven 'maven-3.9'  
+    // ✅ What it does: makes Maven 3.9 available in the pipeline environment  
+    // 🧠 Why it matters: ensures consistency across builds requiring Maven  
+  }  
+
+  stages {  
+    stage("build jar") {  
+      steps {  
+        script {  
+          buildJar()  
+          // ✅ What it does: calls shared library function to compile the Java app into a JAR  
+          // 🧠 Why it matters: abstracts Maven commands into reusable shared library logic  
+        }  
+      }  
+    }  
+
+    stage("build and push image") {  
+      steps {  
+        script {  
+          buildImage()  
+          // ✅ What it does: calls shared library function to build and push Docker image  
+          // 🧠 Why it matters: automates container creation and upload to registry for deployment  
+        }  
+      }  
+    }  
+
+    stage("deploy") {  
+      steps {  
+        script {  
+          echo 'Deploying the application...'  
+          // ✅ What it does: logs a placeholder message for deployment logic  
+          // 🧠 Why it matters: scaffolds pipeline for adding deployment automation later  
+        }  
+      }  
+    }  
+  }  
+}  
+
+// ------------------------------  
+// ▶️ HOW TO RUN / EXECUTE THIS CODE  
+// ------------------------------  
+// Trigger in Jenkins after adding the shared library to Jenkins global libraries configuration.  
+// Or run manually:  
+// - Jenkins UI: Click "Build Now"  
+// - CLI: jenkins-cli build <job-name>  
+// - API: POST to Jenkins job URL  
+
+// ------------------------------  
+// ✅ NOTES / GOTCHAS / TIPS  
+// ------------------------------  
+// - Ensure shared library functions buildJar() and buildImage() are implemented and available in the repo.  
+// - Replace 'gitlab-credentials' with the Jenkins credential ID configured for GitLab access.  
+// - Configure Docker and Maven tools in Jenkins global settings to match names used here.  
+// - Future deployment logic (e.g., Helm charts, Kubernetes kubectl commands) can be added to the "deploy" stage.  

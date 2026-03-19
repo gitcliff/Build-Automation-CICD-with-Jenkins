@@ -1,0 +1,3 @@
+git add .
+git commit -m "Add Jenkins shared library scripts and helper class for Docker operations, Maven build, and a declarative pipeline integrating build, Docker login/push, and deployment stages."
+git push

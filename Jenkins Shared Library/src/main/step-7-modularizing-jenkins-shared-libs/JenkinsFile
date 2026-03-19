@@ -1,0 +1,87 @@
+// 📦 SUMMARY  
+// This code builds: A Jenkins Declarative Pipeline that uses a shared library to build a Java jar, build & push a Docker image, and prepare for deployment.  
+// Language/Platform: Jenkins Pipeline (Groovy) with Shared Library integration  
+// What you'll learn: How to import a shared library, configure Maven tool, call shared library functions (with and without parameters), and structure pipeline stages.  
+// Outcome: Runs three stages—building a jar file, building & pushing a Docker image to Docker Hub, and placeholder deployment steps.  
+// Why this matters: Shows how to centralize build and Docker logic in shared libraries, enabling clean, maintainable pipelines that can scale across projects.
+
+
+// ------------------------------  
+// 🧩 SHARED LIBRARY IMPORT  
+// ------------------------------  
+library identifier: 'jenkins-shared-library-1.0@main', retriever: modernSCM(  // ✅ What it does: Imports a shared library from a GitLab repository at the `main` branch.  
+  [$class: 'GitSCMSource',                                                  // 🧠 Why it matters: Enables use of reusable pipeline functions like `buildJar()` and `buildImage()` defined externally.  
+   remote: 'https://gitlab.com/cdickersoncloudcoder/jenkins-shared-library-1.0.git',  
+   credentialsId: 'gitlab-credentials']                                     // ✅ What it does: Uses Jenkins credentials for GitLab authentication to access the repo securely.  
+)  
+
+// ------------------------------  
+// 🧩 PIPELINE DEFINITION  
+// ------------------------------  
+pipeline {  
+  agent any                                   // ✅ What it does: Runs on any available Jenkins agent.  
+                                              // 🧠 Why it matters: Flexible execution environment.
+
+  tools {  
+    maven 'maven-3.9'                        // ✅ What it does: Specifies Maven version `maven-3.9` to use.  
+                                              // 🧠 Why it matters: Ensures consistent Maven environment for builds.
+  }  
+
+  stages {  
+
+    // ------------------------------  
+    // ⚙️ STAGE: build jar  
+    // ------------------------------  
+    stage("build jar") {  
+      steps {  
+        buildJar()                            // ✅ What it does: Calls `buildJar()` from the shared library to build the Java jar.  
+                                              // 🧠 Why it matters: Encapsulates build logic centrally, promoting reuse and maintainability.
+      }  
+    }  
+
+    // ------------------------------  
+    // ⚙️ STAGE: build and push image  
+    // ------------------------------  
+    stage("build and push image") {  
+      steps {  
+        buildImage('cdickersoncloudcoder/demo-app:jma-3.5')   // ✅ What it does: Calls `buildImage()` with Docker image name parameter to build and push Docker image.  
+                                                              // 🧠 Why it matters: Allows parameterized image builds, making the function reusable for different images.
+      }  
+    }  
+
+    // ------------------------------  
+    // ⚙️ STAGE: deploy  
+    // ------------------------------  
+    stage("deploy") {  
+      steps {  
+        echo "🚀 Deployment steps will go here"            // ✅ What it does: Placeholder message for deployment commands.  
+                                                            // 🧠 Why it matters: Marks where actual deployment logic should be added.
+      }  
+    }  
+  }  
+}  
+
+// ------------------------------  
+// ▶️ HOW TO RUN / EXECUTE THIS CODE  
+// ------------------------------  
+// 1️⃣ Commit this Jenkinsfile to your repository  
+// ✅ What it does: Jenkins will detect and run this pipeline on job triggers.  
+// 🧠 Why it matters: Automates build, image, and deploy stages in your CI/CD workflow.
+
+// 2️⃣ Ensure Jenkins credentials (`gitlab-credentials`) are configured  
+// ✅ What it does: Allows Jenkins to securely clone the shared library repository.  
+
+// 3️⃣ Verify Maven tool named `maven-3.9` is configured on Jenkins  
+// ✅ What it does: Ensures pipeline can run Maven commands properly.
+
+// 4️⃣ Push changes or manually trigger the pipeline  
+// ✅ What it does: Starts pipeline execution with shared library functions running in stages.
+
+// ------------------------------  
+// ✅ NOTES / GOTCHAS / TIPS  
+// ------------------------------  
+// - Replace `'your-shared-library-repo-path.git'` with your actual shared library GitLab repo path.  
+// - Ensure shared library contains properly defined `buildJar()` and `buildImage(String)` functions.  
+// - Use consistent tool versions (e.g., Maven) configured in Jenkins global tools.  
+// - Replace the Docker image name `'cdickersoncloudcoder/demo-app:jma-3.4'` with your actual Docker Hub repo/tag.  
+// - Add deployment steps in the deploy stage as per your target environment (Kubernetes, cloud, etc.).

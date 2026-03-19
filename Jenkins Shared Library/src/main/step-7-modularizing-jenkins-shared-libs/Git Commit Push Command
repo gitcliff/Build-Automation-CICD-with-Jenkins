@@ -1,0 +1,3 @@
+git add .
+git commit -m "Add parameterized Jenkins shared library function for Docker image build/push and a declarative pipeline using shared library to build JAR, build/push Docker image, and scaffold deployment stage."
+git push

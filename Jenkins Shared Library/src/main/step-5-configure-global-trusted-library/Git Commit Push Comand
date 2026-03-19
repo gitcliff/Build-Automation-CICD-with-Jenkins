@@ -1,0 +1,3 @@
+git add .
+git commit -m "Add Jenkins pipeline that imports a shared library, builds a Java JAR with Maven, builds and pushes a Docker image, and includes a deployment stage placeholder."
+git push
