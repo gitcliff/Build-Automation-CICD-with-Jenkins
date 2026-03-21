@@ -17,9 +17,9 @@ def buildImage() {                          // ✅ Function to build and push Do
     passwordVariable: 'PASS',  
     usernameVariable: 'USER'  
   )]) {  
-    sh 'docker build -t cdickersoncloudcoder/demo-app:jma-3.3 .'  // ✅ Builds Docker image with specified tag.  
+    sh 'docker build -t gcliff/demo-app:jma-3.3 .'  // ✅ Builds Docker image with specified tag.  
     sh 'echo $PASS | docker login -u $USER --password-stdin'     // ✅ Logs into Docker Hub securely using the credentials.  
-    sh 'docker push cdickersoncloudcoder/demo-app:jma-3.3'       // ✅ Pushes the Docker image to Docker Hub.  
+    sh 'docker push gcliff/demo-app:jma-3.3'       // ✅ Pushes the Docker image to Docker Hub.  
   }  
 }
 

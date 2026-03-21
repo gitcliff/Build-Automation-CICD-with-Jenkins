@@ -62,7 +62,7 @@ pipeline {                                     // ✅ What it does: Starts a Jen
           usernameVariable: 'USER'            // ✅ What it does: Maps the username to the environment variable 'USER'.
         )]) {
 
-          sh 'docker build -t cdickersoncloudcoder/demo-app:jma-2.2 .'  
+          sh 'docker build -t gcliff/demo-app:jma-2.2 .'  
           // ✅ What it does: Builds a Docker image from the current directory and tags it with 'jma-2.2'.
           // 🧠 Why it matters: Prepares the container image that will be deployed or pushed to Docker Hub.
 
@@ -70,7 +70,7 @@ pipeline {                                     // ✅ What it does: Starts a Jen
           // ✅ What it does: Logs into Docker Hub using the injected credentials without exposing the password.
           // 🧠 Why it matters: Enables pushing images securely without storing secrets in plain text.
 
-          sh 'docker push cdickersoncloudcoder/demo-app:jma-2.2'  
+          sh 'docker push gcliff/demo-app:jma-2.2'  
           // ✅ What it does: Pushes the Docker image to Docker Hub.
           // 🧠 Why it matters: Makes the image available for deployment to other environments or servers.
         }

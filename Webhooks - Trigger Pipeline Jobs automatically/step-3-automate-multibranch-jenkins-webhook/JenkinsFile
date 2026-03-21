@@ -1,0 +1,73 @@
+// 📦 SUMMARY
+// This code builds: A simple Jenkins pipeline with three stages (test, build, deploy), each printing a message to indicate progress.
+// Language/Platform: Jenkins Declarative Pipeline (Groovy syntax)
+// What you'll learn: How to define stages, use `script` blocks, and structure a pipeline for CI/CD workflows.
+// Outcome: When run, Jenkins will sequentially execute the "test", "build", and "deploy" stages, each echoing its purpose to the console log.
+// Why this matters: This template helps beginners understand stage-based pipelines and can easily be expanded into real CI/CD processes.
+
+// ------------------------------
+// 🧩 PIPELINE DEFINITION
+// ------------------------------
+pipeline {
+  agent any                                     // ✅ What it does: Uses any available Jenkins agent to run the pipeline.
+                                               // 🧠 Why it matters: No restriction on specific agent, good for general-purpose pipelines.
+
+  stages {
+    // ------------------------------
+    // 🧩 STAGE: Test
+    // ------------------------------
+    stage("test") {                             // ✅ What it does: Defines a stage named "test".
+                                               // 🧠 Why it matters: Group related steps for testing here.
+      steps {
+        script {
+          echo "Testing the application...."    // ✅ What it does: Prints a message to Jenkins console output.
+          echo "Testing the triggering jenkinks Webhook added multibranch"                                     // 🧠 Why it matters: Placeholder for actual test commands like `mvn test` or `npm test`.
+        }
+      }
+    }
+
+    // ------------------------------
+    // 🧩 STAGE: Build
+    // ------------------------------
+    stage("build") {                            // ✅ What it does: Defines a stage named "build".
+                                               // 🧠 Why it matters: Where build logic such as `mvn package` or `docker build` would go.
+      steps {
+        script {
+          echo "Building the application...."   // ✅ What it does: Prints a message as a placeholder for build steps.
+                                               // 🧠 Why it matters: Keeps the stage flow visible during testing.
+        }
+      }
+    }
+
+    // ------------------------------
+    // 🧩 STAGE: Deploy
+    // ------------------------------
+    stage("deploy") {                           // ✅ What it does: Defines a stage named "deploy".
+                                               // 🧠 Why it matters: Reserve space for deployment logic such as `kubectl apply` or `ansible-playbook`.
+      steps {
+        script {
+          echo "Deploying the application...."  // ✅ What it does: Prints deployment placeholder message.
+                                               // 🧠 Why it matters: Shows where to insert actual deployment steps later.
+        }
+      }
+    }
+  }
+}
+
+// ------------------------------
+// ▶️ HOW TO RUN / EXECUTE THIS CODE
+// ------------------------------
+// - Save this Jenkinsfile in your repository root.
+// - Push changes to trigger a Jenkins job (or manually trigger it in Jenkins).
+// - Watch console logs for:
+//   🧪 "Testing the application...."
+//   🔧 "Building the application...."
+//   🚀 "Deploying the application...."
+
+// ------------------------------
+// ✅ NOTES / GOTCHAS / TIPS
+// ------------------------------
+// - Replace `echo` with actual commands as your pipeline evolves.
+// - Using `script {}` blocks is optional for simple steps but allows advanced Groovy scripting.
+// - For multi-agent workflows, you can assign `agent` per stage instead of globally.
+

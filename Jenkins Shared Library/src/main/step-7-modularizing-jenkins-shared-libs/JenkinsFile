@@ -11,7 +11,7 @@
 // ------------------------------  
 library identifier: 'jenkins-shared-library-1.0@main', retriever: modernSCM(  // ✅ What it does: Imports a shared library from a GitLab repository at the `main` branch.  
   [$class: 'GitSCMSource',                                                  // 🧠 Why it matters: Enables use of reusable pipeline functions like `buildJar()` and `buildImage()` defined externally.  
-   remote: 'https://gitlab.com/cdickersoncloudcoder/jenkins-shared-library-1.0.git',  
+   remote: 'https://gitlab.com/gitcliff/jenkins-shared-library-1.0.git',  
    credentialsId: 'gitlab-credentials']                                     // ✅ What it does: Uses Jenkins credentials for GitLab authentication to access the repo securely.  
 )  
 
@@ -44,7 +44,7 @@ pipeline {
     // ------------------------------  
     stage("build and push image") {  
       steps {  
-        buildImage('cdickersoncloudcoder/demo-app:jma-3.5')   // ✅ What it does: Calls `buildImage()` with Docker image name parameter to build and push Docker image.  
+        buildImage('gcliff/demo-app:jma-3.5')   // ✅ What it does: Calls `buildImage()` with Docker image name parameter to build and push Docker image.  
                                                               // 🧠 Why it matters: Allows parameterized image builds, making the function reusable for different images.
       }  
     }  
@@ -83,5 +83,5 @@ pipeline {
 // - Replace `'your-shared-library-repo-path.git'` with your actual shared library GitLab repo path.  
 // - Ensure shared library contains properly defined `buildJar()` and `buildImage(String)` functions.  
 // - Use consistent tool versions (e.g., Maven) configured in Jenkins global tools.  
-// - Replace the Docker image name `'cdickersoncloudcoder/demo-app:jma-3.4'` with your actual Docker Hub repo/tag.  
+// - Replace the Docker image name `'gcliff/demo-app:jma-3.4'` with your actual Docker Hub repo/tag.  
 // - Add deployment steps in the deploy stage as per your target environment (Kubernetes, cloud, etc.).
