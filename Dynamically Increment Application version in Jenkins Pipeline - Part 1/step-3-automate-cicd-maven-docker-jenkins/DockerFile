@@ -1,0 +1,51 @@
+# 📦 SUMMARY  
+# This Dockerfile creates a very small Docker image that can run your Java application.  
+# It uses Amazon Corretto 8 (a free version of Java) and Alpine Linux (a very small, fast OS).  
+# The result is a container that runs your app on port 8080.  
+
+# ------------------------------  
+# 🧩 DOCKERFILE CONTENT (STEP BY STEP)  
+# ------------------------------  
+
+FROM amazoncorretto:8-alpine3.17-jre  
+# ✅ This line says: "Start from a ready-made image that already has Java 8 installed on Alpine Linux."  
+# 🧠 Why: Saves time — you don’t have to install Java yourself, and Alpine keeps it very small.  
+
+EXPOSE 8080  
+# ✅ This tells Docker: "This container will listen for traffic on port 8080."  
+# 🧠 Why: Lets other services (or your browser) connect to the app inside the container.  
+
+COPY ./target/java-maven-app-*.jar /usr/app/  
+# ✅ This copies your built .jar file (your app) into the container, into the folder /usr/app.  
+# 🧠 Why: The container needs the actual app file inside it so it can run it.  
+
+WORKDIR /usr/app  
+# ✅ This changes the "current folder" inside the container to /usr/app.  
+# 🧠 Why: Makes it easier to run commands since we are now in the same folder as the jar file.  
+
+CMD java -jar java-maven-app-*.jar  
+# ✅ This says: "When the container starts, run this command to start the app."  
+# 🧠 Why: Without this, the container would start and do nothing — this is what launches your program.  
+
+# ------------------------------  
+# ▶️ HOW TO BUILD AND RUN THIS IMAGE  
+# ------------------------------  
+
+# Step 1: Build the Docker image (run in the same folder as this Dockerfile)  
+docker build -t my-java-app .  
+# ✅ This creates a new image and names it `my-java-app`.  
+# 🧠 Why: You need to build the image before you can run it.  
+
+# Step 2: Run the container and connect port 8080  
+docker run -p 8080:8080 my-java-app  
+# ✅ This starts the container and maps your computer's port 8080 → container's port 8080.  
+# 🧠 Why: This lets you open http://localhost:8080 in a browser and reach the app.  
+
+# ------------------------------  
+# ✅ NOTES / GOTCHAS / TIPS  
+# ------------------------------  
+# - Make sure you build your app first (mvn package) so the jar file exists in ./target.  
+# - The `*` (wildcard) works in COPY, but `CMD` may fail if there are multiple jar files.  
+#   Consider renaming your jar to something fixed like java-maven-app.jar.  
+# - If you need extra packages inside the container (e.g., curl, bash),  
+#   you can add a line: RUN apk add --no-cache <package-name>.  

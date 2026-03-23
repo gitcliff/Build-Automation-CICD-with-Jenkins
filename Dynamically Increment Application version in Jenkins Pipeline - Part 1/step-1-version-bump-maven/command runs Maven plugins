@@ -1,0 +1,68 @@
+# 📦 SUMMARY  
+# This command uses Maven plugins to read (parse) your current project version from pom.xml,  
+# then automatically increments the patch (last) number of the version by 1, and writes the new version back to pom.xml.  
+# Language/Platform: Bash / Maven CLI  
+# What you'll learn: How Maven's `build-helper:parse-version` and `versions:set` plugins work together to  
+# manipulate version numbers in an automated way.  
+# Outcome: Your project's version changes from something like 1.2.3 → 1.2.4 in the pom.xml file.  
+# Why this matters: This is crucial in CI/CD pipelines or release processes where you want consistent,  
+# automated version bumps without human error.  
+
+# ------------------------------  
+# 🧩 COMMAND EXPLANATION  
+# ------------------------------  
+
+mvn build-helper:parse-version \                              # ✅ What it does: Runs Maven with the `build-helper:parse-version` goal.  
+                                                             # 🧠 Why it matters: This plugin "breaks apart" the current version  
+                                                             # (e.g., 1.2.3) into three variables:  
+                                                             #   ${parsedVersion.majorVersion} → 1  
+                                                             #   ${parsedVersion.minorVersion} → 2  
+                                                             #   ${parsedVersion.incrementalVersion} → 3  
+                                                             # This is like splitting the version into pieces so we can modify them.  
+
+versions:set \                                               # ✅ What it does: Calls the `versions:set` goal, which lets you change  
+                                                             # the project's version to a new value.  
+                                                             # 🧠 Why it matters: Without this, Maven wouldn't know that you want to  
+                                                             # update pom.xml with a new version. This is the "action step."  
+
+-DnewVersion='${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}' \  
+                                                             # ✅ What it does: Uses the parsed variables from above to build a new  
+                                                             # version string. `${parsedVersion.nextIncrementalVersion}` automatically  
+                                                             # adds +1 to the patch version.  
+                                                             # Example:  
+                                                             #   If current version = 1.2.3  
+                                                             #   newVersion = 1.2.(3+1) → 1.2.4  
+                                                             # 🧠 Why it matters: Automates version bumping so you don't have to  
+                                                             # manually edit pom.xml and risk typos.  
+
+versions:commit                                              # ✅ What it does: Saves (commits) the new version into pom.xml.  
+                                                             # 🧠 Why it matters: Until you "commit," Maven keeps the change staged  
+                                                             # in memory. This command writes the changes permanently so the next  
+                                                             # build uses the new version.  
+
+# ------------------------------  
+# ▶️ HOW TO RUN / EXECUTE THIS COMMAND  
+# ------------------------------  
+
+# 1️⃣ Open a terminal in the root folder of your Maven project where pom.xml is located.  
+# 2️⃣ Run the command exactly as above.  
+# ✅ What it does: Reads the old version, calculates the new one, updates pom.xml with the new version.  
+# 🧠 Why it matters: Ensures your version number moves forward consistently before a new release or build.  
+
+# ------------------------------  
+# 🔄 Equivalent PowerShell Command  
+# ------------------------------  
+
+# In PowerShell, we need to escape the `$` sign because PowerShell uses `$` for its own variables.  
+# Use backticks (`) to escape it so PowerShell passes it correctly to Maven:  
+
+mvn build-helper:parse-version versions:set \
+  -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} \
+  versions:commit 
+
+# ------------------------------  
+# ✅ NOTES / GOTCHAS / TIPS  
+# ------------------------------  
+# - 💡 Tip: Make sure `build-helper-maven-plugin` and `versions-maven-plugin` are available in your project  
+#   (they don't need to be in pom.xml, but Maven must be able to download them from Maven Central).  
+# - 💡 Tip: Always review the resulting pom.xml after running this once or twice,

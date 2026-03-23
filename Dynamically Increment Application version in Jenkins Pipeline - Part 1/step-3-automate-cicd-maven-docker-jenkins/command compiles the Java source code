@@ -1,0 +1,37 @@
+
+# 📦 SUMMARY  
+# This command compiles the Java source code, runs tests, and packages the application into a distributable format (e.g., JAR or WAR) using Maven.  
+# Language/Platform: Bash / Maven CLI  
+# What you'll learn: Basic Maven lifecycle phase usage for building projects.  
+# Outcome: A packaged artifact (like a .jar file) is created in the `target/` directory.  
+# Why this matters: Essential step to build your Java app so it can be run, tested, or deployed.
+
+# ------------------------------  
+# 🧩 COMMAND EXPLANATION  
+# ------------------------------  
+mvn package  
+
+# ✅ What it does:  
+# - Runs all necessary steps to compile your code.  
+# - Executes tests automatically.  
+# - Packages your compiled code and resources into a JAR/WAR file.  
+
+# ------------------------------  
+# ▶️ HOW TO RUN / EXECUTE THIS COMMAND  
+# ------------------------------  
+# 1. Open your terminal or command prompt.  
+# 2. Navigate to the root directory of your Maven project (where your pom.xml is located).  
+# 3. Run the command `mvn package`.  
+  
+# ------------------------------  
+# 🔄 Equivalent PowerShell command  
+# ------------------------------  
+# Same as Bash, just run directly in PowerShell:  
+mvn package  
+
+# ------------------------------  
+# ✅ NOTES / GOTCHAS / TIPS  
+# ------------------------------  
+# - Make sure you have Maven installed and configured in your system PATH.  
+# - Tests will run by default; if you want to skip tests, add `-DskipTests`.  
+# - The output artifact will be in the `target/` directory unless configured otherwise in pom.xml.  

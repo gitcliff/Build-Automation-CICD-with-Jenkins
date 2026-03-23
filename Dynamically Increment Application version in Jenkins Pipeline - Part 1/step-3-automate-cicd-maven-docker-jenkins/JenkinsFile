@@ -1,0 +1,95 @@
+// 📦 SUMMARY
+// This Jenkins pipeline automatically increments the patch version of a Maven project, builds the app,
+// creates a Docker image tagged with the new version plus Jenkins build number, and pushes it to Docker Hub.
+// Language/Platform: Jenkins Declarative Pipeline (Groovy), Maven, Docker CLI
+// What you'll learn: Version incrementing with Maven plugins, reading files in Jenkins, environment variables, Docker build and push, secure credential handling.
+// Outcome: A new Docker image with an updated version tag is built and pushed to Docker Hub; placeholder deploy step included.
+// Why this matters: Automates the full CI flow from version bump through build and containerization, enabling consistent, traceable deployments.
+
+// ------------------------------
+// 🧩 PIPELINE DEFINITION
+// ------------------------------
+pipeline {
+  agent any                                            // ✅ Run on any available Jenkins agent.
+
+  tools {
+    maven 'maven-3.9'                                 // ✅ Use Maven 3.9 configured in Jenkins for all Maven commands.
+  }
+
+  stages {
+    stage('increment version') {                       // ✅ Automatically bump patch version using Maven plugins.
+      steps {
+        script {
+          echo 'Incrementing app version...'           // ✅ Informational message.
+
+          // ✅ Run Maven to parse current version and increment patch (nextIncrementalVersion).
+          sh '''
+          mvn build-helper:parse-version versions:set \
+          -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
+          versions:commit
+          '''
+
+          // ✅ Read pom.xml and extract <version> content to use as Docker image tag.
+          def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
+          def version = matcher[0][1]
+
+          // ✅ Set IMAGE_NAME environment variable combining version and Jenkins build number for uniqueness.
+          env.IMAGE_VERSION = "${version}-${BUILD_NUMBER}"
+        }
+      }
+    }
+
+    stage('build app') {                               // ✅ Build the application using Maven clean and package goals.
+      steps {
+        script {
+          echo 'Building the application...'
+          sh 'mvn clean package'                        // ✅ Clean previous build artifacts and package the app.
+        }
+      }
+    }
+
+    stage('build image') {                             // ✅ Build and push Docker image tagged with new version.
+      steps {
+        script {
+          echo "Building the Docker image..."
+
+          // ✅ Use Jenkins credentials securely for Docker Hub login.
+          withCredentials([usernamePassword(credentialsId: 'dockerhub credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+
+            sh "docker build -t cdickersoncloudcoder/demo-app:${IMAGE_VERSION} ."       // Build image with version tag.
+            sh 'echo $PASS | docker login -u $USER --password-stdin'                   // Secure login to Docker Hub.
+            sh "docker push cdickersoncloudcoder/demo-app:${IMAGE_VERSION}"            // Push tagged image to Docker Hub.
+          }
+        }
+      }
+    }
+
+    stage('deploy') {                                  // ✅ Placeholder for deployment logic (e.g., Kubernetes, ECS).
+      steps {
+        script {
+          echo 'Deploying Docker image...'             // Inform that deploy step would go here.
+          // Add your deployment commands here
+        }
+      }
+    }
+  }
+}
+
+// ------------------------------
+// ▶️ HOW TO RUN / EXECUTE THIS PIPELINE
+// ------------------------------
+// 1. Configure Jenkins with Maven 3.9 and Docker installed on agents.
+// 2. Add 'Docker-hub-credentials' to Jenkins Credentials (username/password).
+// 3. Commit this Jenkinsfile to your repo root.
+// 4. Trigger the pipeline via Jenkins UI or webhook on commit.
+// 5. Pipeline increments version, builds app, creates and pushes Docker image tagged with the new version + build number.
+
+// ------------------------------
+// ✅ NOTES / GOTCHAS / TIPS
+// ------------------------------
+// - The `readFile` regex assumes the first <version> tag in pom.xml is the project version.
+// - You may want to add error handling if version parsing fails.
+// - Replace 'your-dockerhub-username' with your actual Docker Hub user or org name.
+// - Make sure Docker is installed and configured properly on Jenkins agents.
+// - Consider adding tests before build or integration tests before deploy for robust pipelines.
+// - Use Jenkins environment variables (like BUILD_NUMBER) to keep image tags unique and traceable.
