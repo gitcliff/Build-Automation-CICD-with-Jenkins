@@ -1,5 +1,5 @@
 // 📦 SUMMARY  
-// This Jenkins Pipeline imports a shared library from GitLab to handle reusable build and deployment logic.  
+// This Jenkins Pipeline imports a shared library from GitHub to handle reusable build and deployment logic.  
 // It builds a Java JAR using Maven, containerizes it with Docker, pushes the image to a registry, and includes a deployment stage placeholder.  
 // Language/Platform: Jenkins Pipeline (Groovy)  
 // What you'll learn: shared library import, pipeline stages, script blocks, Maven tool configuration  
@@ -11,10 +11,10 @@
 // ------------------------------  
 library identifier: 'jenkins-shared-library-1.0@main', retriever: modernSCM(  
   [$class: 'GitSCMSource',  
-   remote: 'https://gitlab.com/gitcliff/jenkins-shared-library-1.0.git',  
-   credentialsId: 'gitlab-credentials']  
+   remote: 'https://gitHub.com/gitcliff/jenkins-shared-library-1.0.git',  
+   credentialsId: 'github-credentials']  
 )  
-// ✅ What it does: loads the shared library 'jenkins-shared-library-1.0' from the main branch of a GitLab repo  
+// ✅ What it does: loads the shared library 'jenkins-shared-library-1.0' from the main branch of a GitHub repo  
 // 🧠 Why it matters: allows this pipeline to use functions like buildJar() and buildImage() defined in the library  
 
 // ------------------------------  
@@ -77,6 +77,6 @@ pipeline {
 // ✅ NOTES / GOTCHAS / TIPS  
 // ------------------------------  
 // - Ensure shared library functions buildJar() and buildImage() are implemented and available in the repo.  
-// - Replace 'gitlab-credentials' with the Jenkins credential ID configured for GitLab access.  
+// - Replace 'github-credentials' with the Jenkins credential ID configured for GitHub access.  
 // - Configure Docker and Maven tools in Jenkins global settings to match names used here.  
 // - Future deployment logic (e.g., Helm charts, Kubernetes kubectl commands) can be added to the "deploy" stage.  
